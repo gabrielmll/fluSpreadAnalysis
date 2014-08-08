@@ -30,7 +30,7 @@ try:
 	w = csv.writer(outputFile, delimiter=',');
 	
 	# output File header
-	w.writerows([['date','id','gotFlu','interactions','fluInteractions']])
+	w.writerows([['date','id','gotFlu','interactions','fluInteractions','healthInteractions']])
 
 	while int(current_day) != 20090112:
 		# skip the headers
@@ -43,6 +43,7 @@ try:
 		gotFlu = [0] * 81
 		interactions = [0] * 81
 		fluInteractions = [0] * 81
+		# healthInteractions = [0] * 81 No need. It's just an subtraction: interactions - fluInteractions
 
 		# each row of the fluSymptom file
 		# The reason Flu is being analysed first is that after we can easily check the amount of flu interactions
@@ -78,7 +79,7 @@ try:
 		gotFlu.pop(0)
 		fluInteractions.pop(0)
 		for i in range(len(interactions)):
-			w.writerow([current_day, i+1, gotFlu[i], interactions[i], fluInteractions[i]]);
+			w.writerow([current_day, i+1, gotFlu[i], interactions[i], fluInteractions[i],interactions[i]-fluInteractions[i]]);
 
 		current_day = incrementOneDay( current_day );
 		proximityFile.seek(0);
