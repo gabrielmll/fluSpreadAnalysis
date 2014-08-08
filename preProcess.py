@@ -30,7 +30,7 @@ try:
 	w = csv.writer(outputFile, delimiter=',');
 	
 	# output File header
-	w.writerows([['date','id','gotFlu','interactions','fluInteractions','healthInteractions']])
+	w.writerows([['date','id','gotFlu','interactions','fluInteractions','healthInteractions','sore.throat.cough','runnynose.congestion.sneezing','fever','nausea.vomiting.diarrhea']])
 
 	while int(current_day) != 20090112:
 		# skip the headers
@@ -40,31 +40,45 @@ try:
 		print "---------------"
 		print "Date "+str(current_day)
 		# Output variables
-		gotFlu = [0] * 81
-		interactions = [0] * 81
-		fluInteractions = [0] * 81
-		# healthInteractions = [0] * 81 No need. It's just an subtraction: interactions - fluInteractions
+		gotFlu = [0] * 81	# 0 or 1
+		interactions = [0] * 81	# sum
+		fluInteractions = [0] * 81	# sum
+		# healthInteractions = [0] * 81 Not needed. It's just an subtraction: interactions - fluInteractions
+		soreThroatCough = [0] * 81 # 0 or 1
+		runnynoseCongSneezing = [0] * 81 # 0 or 1
+		fever = [0] * 81 # 0 or 1
+		nauseaVomDiar = [0] * 81 # 0 or 1
 
 		# each row of the fluSymptom file
 		# The reason Flu is being analysed first is that after we can easily check the amount of flu interactions
 		for row in fluReader:
 			# Formatting dates
-			proximityDate = long(row[1].replace("-", "").replace(":", "").replace(" ", ""))
-			proximityDate = proximityDate/1000000 # remove hhmmss
+			processedDate = long(row[1].replace("-", "").replace(":", "").replace(" ", ""))
+			processedDate = processedDate/1000000 # remove hhmmss
 
 			# for this day, compute the symptoms
-			if proximityDate == int(current_day):
-				if row[2] == '1' or row[3] == '1' or row[4] == '1' or row[5] == '1':
+			if processedDate == int(current_day):
+				if row[2] == '1':
 					gotFlu[int(row[0])] = 1
+					soreThroatCough[int(row[0])] = 1
+				if row[3] == '1':
+					gotFlu[int(row[0])] = 1
+					runnynoseCongSneezing[int(row[0])] = 1
+				if row[4] == '1':
+					gotFlu[int(row[0])] = 1
+					fever[int(row[0])] = 1
+				if row[5] == '1':
+					gotFlu[int(row[0])] = 1
+					nauseaVomDiar[int(row[0])] = 1
 
 		# each row of the proximity file
 		for row in proximityReader:
 			# Formatting dates
-			proximityDate = long(row[2].replace("-", "").replace(":", "").replace(" ", ""))
-			proximityDate = proximityDate/1000000 # remove hhmmss
+			processedDate = long(row[2].replace("-", "").replace(":", "").replace(" ", ""))
+			processedDate = processedDate/1000000 # remove hhmmss
 
 			# for this day, compute the number of interactions
-			if proximityDate == int(current_day):
+			if processedDate == int(current_day):
 				interactions[int(row[0])]+=1
 				interactions[int(row[1])]+=1
 
@@ -78,8 +92,12 @@ try:
 		interactions.pop(0)
 		gotFlu.pop(0)
 		fluInteractions.pop(0)
+		soreThroatCough.pop(0)
+		runnynoseCongSneezing.pop(0)
+		fever.pop(0)
+		nauseaVomDiar.pop(0)
 		for i in range(len(interactions)):
-			w.writerow([current_day, i+1, gotFlu[i], interactions[i], fluInteractions[i],interactions[i]-fluInteractions[i]]);
+			w.writerow([current_day, i+1, gotFlu[i], interactions[i], fluInteractions[i],interactions[i]-fluInteractions[i],soreThroatCough[i],runnynoseCongSneezing[i],fever[i],nauseaVomDiar[i]]);
 
 		current_day = incrementOneDay( current_day );
 		proximityFile.seek(0);
