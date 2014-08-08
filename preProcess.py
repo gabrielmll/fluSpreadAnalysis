@@ -1,6 +1,6 @@
 # Preprocess for statistical analysis
 # data output format:
-#	date[yyyymmdd], id[1-80], gotFlu[0-1], numOfInteractions, fluInteractions, healthInteractions,
+#	date[yyyymmdd], id[1-80], gotFlu[0-1], interactions, fluInteractions, healthInteractions,
 
 import csv
 import datetime, time
@@ -30,9 +30,9 @@ try:
 	w = csv.writer(outputFile, delimiter=',');
 	
 	# output File header
-	w.writerows([['date','id','gotFlu','interactions']])
+	w.writerows([['date','id','gotFlu','interactions','fluInteractions']])
 
-	while int(current_day) != 20090119:
+	while int(current_day) != 20090112:
 		# skip the headers
 		next(proximityReader, None);
 		next(fluFile, None);
@@ -40,20 +40,21 @@ try:
 		print "---------------"
 		print "Date "+str(current_day)
 		# Output variables
-		numOfInteractions = [0] * 81
-		anyFluSymp = [0] * 81
+		gotFlu = [0] * 81
+		interactions = [0] * 81
+		fluInteractions = [0] * 81
 
 		# each row of the fluSymptom file
+		# The reason Flu is being analysed first is that after we can easily check the amount of flu interactions
 		for row in fluReader:
 			# Formatting dates
 			proximityDate = long(row[1].replace("-", "").replace(":", "").replace(" ", ""))
 			proximityDate = proximityDate/1000000 # remove hhmmss
 
 			# for this day, compute the symptoms
-			# The reason Flu is being analysed first is that after we can easily check the amount of flu interactions
 			if proximityDate == int(current_day):
 				if row[2] == '1' or row[3] == '1' or row[4] == '1' or row[5] == '1':
-					anyFluSymp[int(row[0])] = 1
+					gotFlu[int(row[0])] = 1
 
 		# each row of the proximity file
 		for row in proximityReader:
@@ -63,14 +64,21 @@ try:
 
 			# for this day, compute the number of interactions
 			if proximityDate == int(current_day):
-				numOfInteractions[int(row[0])]+=1
-				numOfInteractions[int(row[1])]+=1
+				interactions[int(row[0])]+=1
+				interactions[int(row[1])]+=1
+
+				# if target got flu, source interacts with flu and vice-versa
+				if gotFlu[int(row[0])] == 1:
+					fluInteractions[int(row[1])]+=1
+				if gotFlu[int(row[1])] == 1:
+					fluInteractions[int(row[0])]+=1
 
 		# pop the 0ith array position
-		numOfInteractions.pop(0)
-		anyFluSymp.pop(0)
-		for i in range(len(numOfInteractions)):
-			w.writerow([current_day, i+1, anyFluSymp[i], numOfInteractions[i]]);
+		interactions.pop(0)
+		gotFlu.pop(0)
+		fluInteractions.pop(0)
+		for i in range(len(interactions)):
+			w.writerow([current_day, i+1, gotFlu[i], interactions[i], fluInteractions[i]]);
 
 		current_day = incrementOneDay( current_day );
 		proximityFile.seek(0);
