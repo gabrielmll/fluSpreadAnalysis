@@ -24,7 +24,7 @@ current_day = 20090109;
 # Opening files
 proximityFile = open('Proximity.csv', 'rb');
 fluFile = open('FluSymptoms.csv', 'rb');
-outputFile = open('output.csv', 'wb');
+outputFile = open('spreadFluFeatures_singleDay.csv', 'wb');
 
 try:
 	# csv reader objects
