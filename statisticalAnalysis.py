@@ -14,7 +14,27 @@ data = np.loadtxt('./spreadFluFeatures_singleDay.csv', delimiter=',', skiprows=1
 # Split data to training[75%] and test[25%] sets
 dataTrain, dataTest = train_test_split(data, test_size=0.25, random_state=66)
 
-#nbrs = NearestNeighbors(n_neighbors=2).fit(data)
-#distances, indices = nbrs.kneighbors(data)
-#print(indices)
+# Apply Unsupervised Nearest Neighbors
+nbrs = NearestNeighbors(n_neighbors=2).fit(dataTrain, dataTest)
+distances, indices = nbrs.kneighbors(data)
+print(indices)
 #print(distances)
+
+# playing with plot
+if False:
+	xAxis = []
+	yAxis = []
+	for rows in indices:
+		xAxis.append(rows[0])
+		yAxis.append(rows[1])
+
+	fig = plt.figure()
+
+	ax1 = fig.add_subplot(1,1,1, axisbg='white')
+
+	plt.scatter(xAxis, yAxis)
+
+	plt.title('bla')
+	#plt.ylabel(yAxisL)
+	#plt.xlabel(xAxisL)
+	plt.show()
