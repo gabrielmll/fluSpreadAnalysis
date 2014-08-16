@@ -1,40 +1,20 @@
 import csv
 import numpy as np
 import matplotlib.pyplot as plt
+from sklearn.neighbors import NearestNeighbors
+from sklearn.cross_validation import train_test_split
 from sklearn import preprocessing
 
-def read_csv(file_path, has_header = True):
-    with open(file_path) as f:
-        if has_header: f.readline()
-        data = []
-        for line in f:
-            line = line.strip().split(",")
-            data.append([float(x) for x in line])
-    return data
+# Reading data to a list of dictionaries
+#rawData = list(csv.DictReader(open('./spreadFluFeatures_singleDay.csv', 'rU')))
 
-def write_csv(file_path, data):
-    with open(file_path,"w") as f:
-        for line in data: f.write(",".join(line) + "\n")
+# Reading data to numpy array
+data = np.loadtxt('./spreadFluFeatures_singleDay.csv', delimiter=',', skiprows=1)
 
-rawData = list(csv.DictReader(open('./spreadFluFeatures_singleDay.csv', 'rU')))
-xAxisL = 'gotFlu'
-yAxisL = 'interactions'
-xAxis = []
-yAxis = []
-for rows in rawData:
-	xAxis.append(rows[xAxisL])
-	yAxis.append(rows[yAxisL])
+# Split data to training[75%] and test[25%] sets
+dataTrain, dataTest = train_test_split(data, test_size=0.25, random_state=66)
 
-#data = np.loadtxt('./spreadFluFeatures_singleDay.csv', delimiter=',', skiprows=1)
-#print data[0][0]
-
-fig = plt.figure()
-
-ax1 = fig.add_subplot(1,1,1, axisbg='white')
-
-plt.scatter(xAxis,yAxis)
-
-plt.title('bla')
-plt.ylabel(yAxisL)
-plt.xlabel(xAxisL)
-plt.show()
+#nbrs = NearestNeighbors(n_neighbors=2).fit(data)
+#distances, indices = nbrs.kneighbors(data)
+#print(indices)
+#print(distances)
