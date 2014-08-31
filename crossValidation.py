@@ -29,9 +29,24 @@ nbrs_y_pred = nbrs.predict(X_test)
 nbrs_pr = precision_score(y_test,nbrs_y_pred)
 nbrs_rc = recall_score(y_test,nbrs_y_pred)
 nbrs_CM = confusion_matrix(y_test,nbrs_y_pred)
+print "------------------"
+print "\tNearest Neighbor"
+print "------------------"
+print "Real: "
+print y_test
+print "Predict"
+print nbrs_y_pred
+print "Score:"
+print nbrs_pr
 
 # NearestCentroid
 clf = NearestCentroid().fit(X_train, y_train)
-print clf.predict(X_test)
+print "------------------"
+print "\tNearest Centroid"
+print "------------------"
+print "Real: "
 print y_test
+print "Predict"
+print clf.predict(X_test)
+print "Score: "
 print clf.score(X_test, y_test)
